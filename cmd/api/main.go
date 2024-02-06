@@ -28,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := storage.NewPostgresStorage(os.Getenv("DB_URL"))
+	db, err := storage.NewPostgresDB(os.Getenv("DB_URL"))
 	if err != nil {
 		log.Fatalf("DB Connection Failed: %s\n", err)
 	}
