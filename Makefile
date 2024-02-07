@@ -1,5 +1,7 @@
+.SILENT:
+
 build: 
-	@go build -o bin/expense-x-api cmd/api/main.go
+	go build -o bin/expense-x-api cmd/api/main.go
 
 run:build
-	@./bin/expense-x-api
+	./bin/expense-x-api
