@@ -5,6 +5,7 @@ go 1.21.6
 require (
 	github.com/clerkinc/clerk-sdk-go v1.49.0
 	github.com/go-chi/chi v1.5.5
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
