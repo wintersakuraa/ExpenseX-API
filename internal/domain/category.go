@@ -14,10 +14,10 @@ const (
 )
 
 type Category struct {
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	UserID    string    `json:"userId"`
-	Name      string    `json:"name"`
-	Type      Type      `json:"type"`
-	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+	UserID    string    `json:"userId"    db:"user_id"`
+	Name      string    `json:"name"      db:"name"`
+	Type      Type      `json:"type"      db:"type"`
+	ID        uuid.UUID `json:"id"        db:"id"`
 }

@@ -7,11 +7,11 @@ import (
 )
 
 type Currency struct {
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	Name      string    `json:"name"`
-	Code      string    `json:"code"`
-	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+	Name      string    `json:"name"      db:"name"`
+	Code      string    `json:"code"      db:"code"`
+	ID        uuid.UUID `json:"id"        db:"id"`
 }
 
 func NewCurrency(name string, code string) Currency {
