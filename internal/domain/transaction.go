@@ -18,3 +18,28 @@ type Transaction struct {
 	ID         uuid.UUID `json:"id"         db:"id"`
 	CategoryID uuid.UUID `json:"categoryId" db:"category_id"`
 }
+
+type TransactionParams struct {
+	Date       time.Time
+	Type       Type
+	Note       string
+	UserID     string
+	Currency   Currency
+	Amount     float64
+	CategoryID uuid.UUID
+}
+
+func NewTransaction(params TransactionParams) Transaction {
+	return Transaction{
+		ID:         uuid.New(),
+		CategoryID: params.CategoryID,
+		UserID:     params.UserID,
+		Amount:     params.Amount,
+		Currency:   params.Currency,
+		Note:       params.Note,
+		Date:       params.Date,
+		Type:       params.Type,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+}
