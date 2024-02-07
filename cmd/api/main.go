@@ -13,9 +13,9 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
-	"github.com/wintersakuraa/expense-x-api/internal/api"
-	"github.com/wintersakuraa/expense-x-api/internal/handlers"
 	"github.com/wintersakuraa/expense-x-api/internal/storage"
+	"github.com/wintersakuraa/expense-x-api/internal/transport/rest"
+	restHandlers "github.com/wintersakuraa/expense-x-api/internal/transport/rest/handlers"
 )
 
 func main() {
@@ -39,11 +39,11 @@ func main() {
 	}
 	fmt.Printf("version=%s\n", version)
 
-	handler := handlers.New(client)
+	restHandler := restHandlers.New(client)
 
-	s := api.NewServer(os.Getenv("PORT"), handler.LoadRoutes())
+	restSrv := rest.NewServer(os.Getenv("PORT"), restHandler.LoadRoutes())
 	go func() {
-		if err := s.Start(); err != nil && err != http.ErrServerClosed {
+		if err := restSrv.Start(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Listen: %s\n", err)
 		}
 	}()
@@ -59,7 +59,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := s.Shutdown(ctx); err != nil {
+	if err := restSrv.Shutdown(ctx); err != nil {
 		log.Fatalf("Server Shutdown Failed: %+v", err)
 	}
 	if err := db.Close(); err != nil {
