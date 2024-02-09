@@ -17,3 +17,7 @@ func NewUser(id string, currency Currency) User {
 		UpdatedAt: time.Now(),
 	}
 }
+
+type UpdateUserInput struct {
+	Currency Currency
+}

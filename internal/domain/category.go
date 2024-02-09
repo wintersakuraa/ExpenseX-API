@@ -38,3 +38,8 @@ func NewCategory(params CategoryParams) Category {
 		UpdatedAt: time.Now(),
 	}
 }
+
+type UpdateCategoryInput struct {
+	Name *string
+	Type *Type
+}
