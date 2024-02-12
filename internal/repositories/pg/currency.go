@@ -19,6 +19,25 @@ func NewCurrencyRepository(db *sqlx.DB) *currencyRepository {
 }
 
 func (r *currencyRepository) Create(ctx context.Context, currency domain.Currency) error {
+	query := `INSERT INTO currencies (
+    id, 
+    name,
+    code,
+    created_at,
+    updated_at
+  ) VALUES (
+    :id, 
+    :name,
+    :code,
+    :created_at,
+    :updated_at
+  )`
+
+	_, err := r.db.NamedExecContext(ctx, query, currency)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

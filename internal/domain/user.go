@@ -1,23 +1,28 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
-	CreatedAt time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
-	ID        string    `json:"id"        db:"id"`
-	Currency  Currency  `json:"currency"`
+	CreatedAt  time.Time `json:"createdAt"   db:"created_at"`
+	UpdatedAt  time.Time `json:"updatedAt"   db:"updated_at"`
+	Currency   *Currency `json:"currency"`
+	ID         string    `json:"id"          db:"id"`
+	CurrencyID uuid.UUID `json:"currency_id" db:"currency_id"`
 }
 
-func NewUser(id string, currency Currency) User {
+func NewUser(id string, currencyId uuid.UUID) User {
 	return User{
-		ID:        id,
-		Currency:  currency,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:         id,
+		CurrencyID: currencyId,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 }
 
 type UpdateUserInput struct {
-	Currency Currency
+	CurrencyID uuid.UUID
 }

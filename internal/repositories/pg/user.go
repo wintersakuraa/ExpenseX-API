@@ -18,6 +18,23 @@ func NewUserRepository(db *sqlx.DB) *userRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, user domain.User) error {
+	query := `INSERT INTO users (
+    id, 
+    currency_id,
+    created_at,
+    updated_at
+  ) VALUES (
+    :id, 
+    :currency_id,
+    :created_at,
+    :updated_at
+  )`
+
+	_, err := r.db.NamedExecContext(ctx, query, user)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
