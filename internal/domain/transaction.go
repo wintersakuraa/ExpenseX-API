@@ -43,3 +43,12 @@ func NewTransaction(params TransactionParams) Transaction {
 		UpdatedAt:  time.Now(),
 	}
 }
+
+type UpdateTransactionInput struct {
+	CategoryID *uuid.UUID
+	Amount     *float64
+	Currency   *Currency
+	Note       *string
+	Date       *time.Time
+	Type       *Type
+}

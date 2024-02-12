@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,8 +10,11 @@ import (
 	"time"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
+	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
+	"github.com/wintersakuraa/expense-x-api/internal/domain"
+	"github.com/wintersakuraa/expense-x-api/internal/repositories"
 	"github.com/wintersakuraa/expense-x-api/internal/storage"
 	"github.com/wintersakuraa/expense-x-api/internal/transport/rest"
 	restHandlers "github.com/wintersakuraa/expense-x-api/internal/transport/rest/handlers"
@@ -33,11 +35,14 @@ func main() {
 		log.Fatalf("DB Connection Failed: %s\n", err)
 	}
 
-	var version string
-	if err := db.QueryRow("select version()").Scan(&version); err != nil {
-		panic(err)
+	repos := repositories.New(db)
+
+	id, _ := uuid.Parse("f43a3c66-1d20-46fc-b7a0-7557165699f1")
+	user := domain.NewUser("user_12345678", id)
+	err = repos.User.Create(context.Background(), user)
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Printf("version=%s\n", version)
 
 	restHandler := restHandlers.New(client)
 

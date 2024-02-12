@@ -23,3 +23,8 @@ func NewCurrency(name string, code string) Currency {
 		UpdatedAt: time.Now(),
 	}
 }
+
+type UpdateCurrencyInput struct {
+	Name *string
+	Code *string
+}
