@@ -42,7 +42,15 @@ func (r *currencyRepository) Create(ctx context.Context, currency domain.Currenc
 }
 
 func (r *currencyRepository) GetAll(ctx context.Context) ([]domain.Currency, error) {
-	return []domain.Currency{}, nil
+	query := `SELECT * FROM currencies ORDER BY code`
+	var currencies []domain.Currency
+
+	err := r.db.Select(&currencies, query)
+	if err != nil {
+		return []domain.Currency{}, err
+	}
+
+	return currencies, nil
 }
 
 func (r *currencyRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.Currency, error) {
