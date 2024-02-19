@@ -2,6 +2,8 @@ package pg
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -45,16 +47,20 @@ func (r *currencyRepository) GetAll(ctx context.Context) ([]domain.Currency, err
 	query := `SELECT * FROM currencies ORDER BY code`
 	var currencies []domain.Currency
 
-	err := r.db.Select(&currencies, query)
+	err := r.db.SelectContext(ctx, &currencies, query)
 	if err != nil {
-		return []domain.Currency{}, err
+		return nil, err
 	}
 
 	return currencies, nil
 }
 
 func (r *currencyRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.Currency, error) {
-	return domain.Currency{}, nil
+	query := `SELECT * FROM currencies WHERE id = $1`
+	var currency domain.Currency
+	err := r.db.GetContext(ctx, &currency, query, id)
+
+	return currency, err
 }
 
 func (r *currencyRepository) Update(
@@ -62,9 +68,41 @@ func (r *currencyRepository) Update(
 	id uuid.UUID,
 	input domain.UpdateCurrencyInput,
 ) error {
+	setVals := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.Code != nil {
+		args = append(args, input.Code)
+		setVals = append(setVals, fmt.Sprintf("code = $%d", argId))
+		argId++
+	}
+
+	if input.Name != nil {
+		args = append(args, input.Name)
+		setVals = append(setVals, fmt.Sprintf("name = $%d", argId))
+		argId++
+	}
+
+	setQuery := strings.Join(setVals, ", ")
+	args = append(args, id)
+	query := fmt.Sprintf("UPDATE currencies SET %s WHERE id = $%d", setQuery, argId)
+
+	_, err := r.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (r *currencyRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	query := `DELETE from currencies WHERE id = $1`
+
+	_, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
