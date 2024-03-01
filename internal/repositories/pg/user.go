@@ -2,6 +2,8 @@ package pg
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/wintersakuraa/expense-x-api/internal/domain"
@@ -39,7 +41,11 @@ func (r *userRepository) Create(ctx context.Context, user domain.User) error {
 }
 
 func (r *userRepository) GetByID(ctx context.Context, id string) (domain.User, error) {
-	return domain.User{}, nil
+	query := `SELECT * FROM users WHERE id = $1`
+	var user domain.User
+	err := r.db.GetContext(ctx, &user, query, id)
+
+	return user, err
 }
 
 func (r *userRepository) Update(
@@ -47,6 +53,25 @@ func (r *userRepository) Update(
 	id string,
 	input domain.UpdateUserInput,
 ) error {
+	setVals := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.CurrencyID != nil {
+		args = append(args, input.CurrencyID)
+		setVals = append(setVals, fmt.Sprintf("currency_id = $%d", argId))
+		argId++
+	}
+
+	setQuery := strings.Join(setVals, ", ")
+	args = append(args, id)
+	query := fmt.Sprintf("UPDATE users SET %s WHERE id = $%d", setQuery, argId)
+
+	_, err := r.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

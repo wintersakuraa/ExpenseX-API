@@ -24,5 +24,5 @@ func NewUser(id string, currencyId uuid.UUID) User {
 }
 
 type UpdateUserInput struct {
-	CurrencyID uuid.UUID
+	CurrencyID *uuid.UUID
 }
