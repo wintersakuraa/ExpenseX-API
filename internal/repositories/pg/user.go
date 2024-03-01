@@ -3,7 +3,6 @@ package pg
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/wintersakuraa/expense-x-api/internal/domain"
@@ -53,21 +52,20 @@ func (r *userRepository) Update(
 	id string,
 	input domain.UpdateUserInput,
 ) error {
-	setVals := make([]string, 0)
-	args := make([]interface{}, 0)
-	argId := 1
+	updates := newPGUpdates()
 
 	if input.CurrencyID != nil {
-		args = append(args, input.CurrencyID)
-		setVals = append(setVals, fmt.Sprintf("currency_id = $%d", argId))
-		argId++
+		updates.add("currency_id", input.CurrencyID)
 	}
 
-	setQuery := strings.Join(setVals, ", ")
-	args = append(args, id)
-	query := fmt.Sprintf("UPDATE users SET %s WHERE id = $%d", setQuery, argId)
+	updates.appendArg(id)
+	query := fmt.Sprintf(
+		"UPDATE users SET %s WHERE id = $%d",
+		updates.getSetQuery(),
+		updates.argId,
+	)
 
-	_, err := r.db.ExecContext(ctx, query, args...)
+	_, err := r.db.ExecContext(ctx, query, updates.args...)
 	if err != nil {
 		return err
 	}
@@ -76,5 +74,12 @@ func (r *userRepository) Update(
 }
 
 func (r *userRepository) Delete(ctx context.Context, id string) error {
+	query := `DELETE from users WHERE id = $1`
+
+	_, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

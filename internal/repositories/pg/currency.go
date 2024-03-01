@@ -3,7 +3,6 @@ package pg
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -68,27 +67,24 @@ func (r *currencyRepository) Update(
 	id uuid.UUID,
 	input domain.UpdateCurrencyInput,
 ) error {
-	setVals := make([]string, 0)
-	args := make([]interface{}, 0)
-	argId := 1
+	updates := newPGUpdates()
 
 	if input.Code != nil {
-		args = append(args, input.Code)
-		setVals = append(setVals, fmt.Sprintf("code = $%d", argId))
-		argId++
+		updates.add("code", input.Code)
 	}
 
 	if input.Name != nil {
-		args = append(args, input.Name)
-		setVals = append(setVals, fmt.Sprintf("name = $%d", argId))
-		argId++
+		updates.add("name", input.Name)
 	}
 
-	setQuery := strings.Join(setVals, ", ")
-	args = append(args, id)
-	query := fmt.Sprintf("UPDATE currencies SET %s WHERE id = $%d", setQuery, argId)
+	updates.appendArg(id)
+	query := fmt.Sprintf(
+		"UPDATE currencies SET %s WHERE id = $%d",
+		updates.getSetQuery(),
+		updates.argId,
+	)
 
-	_, err := r.db.ExecContext(ctx, query, args...)
+	_, err := r.db.ExecContext(ctx, query, updates.args...)
 	if err != nil {
 		return err
 	}
